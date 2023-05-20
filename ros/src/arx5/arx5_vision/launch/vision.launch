@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!-- 这个launch文件的作用是开启摄像头识别（后续可通过if语句改成二维码识别和其它识别功能二选一）、从手眼标定文件中发布标定的变换信息 -->
+<!-- 用二维码做跟踪或用相机做其它工作时仅launch该文件即可，不要launch标定文件，否则可能会造成新的不正常的标定覆盖之前的好的标定结果 -->
+<launch>
+
+    <!-- 选择是否使用仿真 -->
+    <arg name="use_sim" default="false" />
+    <!-- 选择识别模式 -->
+    <arg name="tag_detect" default="true" />  <!-- T：二维码识别跟踪；F：物块检测跟踪 -->
+    <!-- 选择是否保存RGB图片 -->
+    <arg name="image_save" default="false" />
+
+    <include unless="$(arg use_sim)" file="$(find arx5_vision)/launch/sensor.launch" /> <!-- 不启用仿真时，开启realsense相机节点-->
+
+    <arg name="launch_prefix" default="" /> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
+    <arg name="node_namespace" default="apriltag_ros_continuous_node" />
+    <arg name="camera_name" default="/camera/color" />
+    <arg name="image_topic" default="image_raw" />
+    <arg name="queue_size" default="1" />
+
+    <!-- Set parameters （利用yaml文件载入AprilTag二维码识别相关参数，并给参数名加上命名空间）-->
+    <rosparam command="load" file="$(find arx5_vision)/config/settings.yaml" ns="$(arg node_namespace)" />
+    <rosparam command="load" file="$(find arx5_vision)/config/tags.yaml" ns="$(arg node_namespace)" />
+    <!-- 开启AprilTag二维码识别节点（该节点发布了相机-二维码的TF变换，结合下面的publish.launch，目标-相机、相机-末端的TF变换就齐全了！） -->
+    <node if="$(arg tag_detect)" pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)" >
+        <!-- Remap topics from those used in code to those on the ROS network，从而可以实现获取图片和相关信息 -->
+        <remap from="image_rect" to="$(arg camera_name)/$(arg image_topic)" />
+        <remap from="camera_info" to="$(arg camera_name)/camera_info" />
+        <param name="publish_tf" type="bool" value="false" />  <!-- 发布TF可以方便我们获取相关变换关系而不用自己计算 -->
+        <param name="publish_tag_detections_image" type="bool" value="true" />  <!-- default: false,这里配置成true，从而可以观察二维码检测后的识别效果图-->
+        <param name="remove_duplicates" type="bool" value="true" />
+        <!-- <param name="tag_family" type="bool" value="true" /> -->
+        <param name="queue_size" type="int" value="$(arg queue_size)" />
+    </node>
+
+    <!-- 开启标定后的TF消息发布节点（相机到末端执行器TF，结合AprilTag的二维码识别TF，可以通过tflistener直接获取二维码-夹爪的TF关系） -->
+    <include file="$(find arx5_vision)/launch/publish.launch">
+        <arg name="eye_on_hand" value="true"/>
+        <arg name="calibration_file" value="$(find arx5_vision)/config/arx5_calib_eye_on_hand.yaml"/>  
+        <arg name="namespace_prefix" value="arx5_calib_eye_on_hand"/>
+    </include>
+
+    <!-- 开启视觉识别节点 -->
+    <node pkg="arx5_vision" type="arx5_vision.py" name="arx5_vision" output="screen">
+        <param name="image_topic" value="camera/color/image_raw"/>
+        <param name="base_frame"  value="camera_link"/>  <!-- base_frame表示想要对准的那个，可以是camera_link或gripper_link1 -->
+        <param name="target_tag" type="int" value="0"/>
+        <param name="target_distance" type="double" value="0.2"/>  <!-- type="str|int|double|bool|yaml"(optional) -->
+        <param name="use_sim" value="$(arg use_sim)"/>
+        <param name="detect_mode" type="bool" value="$(arg tag_detect)"/>
+        <param name="image_save"  type="bool" value="$(arg image_save)"/>
+    </node>
+</launch>
+
+<!-- 关于"apriltag_ros"
+tag → camera:
+    Relative pose of the camera frame to the tag frame. 
+    The tag frame here is a placeholder for a standalone tag frame or a tag bundle frame 
+    and the specific name can be specified in config/tags.yaml or will be set automatically to tag_ID or bundle_COUNT if ommitted. 
+    There will be as many of these transforms as there are specified tags and tag bundles in config/tags.yaml. 
+-->

@@ -1,0 +1,4 @@
+bi_cp = bi.copy()
+bi[:,:] = binary_img[:,:]
+bi_cp[:,281:359] = binary_img[:,281:359]
+binary_img = bi_cp

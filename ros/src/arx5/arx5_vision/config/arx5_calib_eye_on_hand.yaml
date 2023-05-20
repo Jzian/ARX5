@@ -1,0 +1,18 @@
+parameters:
+  eye_on_hand: true
+  freehand_robot_movement: true
+  move_group: arx5_arm
+  move_group_namespace: /
+  namespace: /arx5_calib_eye_on_hand/
+  robot_base_frame: base_link
+  robot_effector_frame: gripper_link1
+  tracking_base_frame: camera_link
+  tracking_marker_frame: tag_0
+transformation:
+  qw: 0.5164897858219366
+  qx: 0.48149288797008666
+  qy: -0.5109749773192245
+  qz: 0.4902116609480576
+  x: -0.04176033704577016
+  y: 0.05894422700060673
+  z: 0.04094115723392361

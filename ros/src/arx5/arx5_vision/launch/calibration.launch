@@ -1,0 +1,33 @@
+<launch>
+  <!-- (start your robot's MoveIt! stack, e.g. include its moveit_planning_execution.launch) -->
+  <!-- (start your tracking system's ROS driver：启动跟踪系统的ROS驱动) -->
+  <!-- 解释：要想自动的完成校准，除了启动easy_handeye，还要启动moveit和控制系统驱动程序（这点在rx5_moveit.launch同时实现了）-->
+
+  <arg name="han_deye_calibration" default="true"/>  <!-- 选择使用easyhandeye手眼标定，还是使用cv2棋盘图进行相机标定 -->
+
+  <include file="$(find arx5_moveit)/launch/arx5_moveit.launch"/>
+  <include file="$(find arx5_vision)/launch/vision.launch"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="gripper_link1_to_gripper_link2" args="0 -0.05 0 0 0 0 gripper_link1 gripper_link2" />
+
+  <include file="$(find easy_handeye)/launch/calibrate.launch">
+    <arg name="move_group" value="arx5_arm"/>  <!-- 指定moveit组，与在arx5_moveit的srdf文件中配置相同 -->
+    <arg name="eye_on_hand" value="true"/>
+    <arg name="namespace_prefix" value="my_eob_calib"/>
+    <arg name="freehand_robot_movement" value="true"/>  <!-- 选择手动控制末端旋转，而不是自动 -->
+    <arg name="start_rviz" value="false"/>
+    <arg name="publish_dummy" value="false"/>
+
+    <arg name="robot_base_frame" value="base_link"/>
+    <arg name="robot_effector_frame" value="gripper_link1"/>
+    <arg name="tracking_base_frame" value="camera_link"/>
+    <arg name="tracking_marker_frame" value="tag_0"/>
+  </include>
+</launch>
+<!--
+You can have any number of calibrations at once (provided you specify distinct namespaces). 
+If you perform again any calibration, you do not need to do anything: 
+  the next time you start the system, the publisher will automatically fetch the latest information. 
+  You can also manually restart the publisher nodes (e.g. with rqt_launch), 
+  if you don't want to shut down the whole system.
+-->

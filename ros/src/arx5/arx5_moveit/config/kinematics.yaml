@@ -1,0 +1,3 @@
+arx5_arm:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin  # 优化为IK
+  kinematics_solver_timeout: 0.01

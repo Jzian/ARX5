@@ -1,0 +1,12 @@
+Metadata-Version: 1.2
+Name: arx5-moveit
+Version: 0.3.0
+Summary: An automatically generated package with all the configuration and launch files for using the arx5_description with the MoveIt Motion Planning Framework
+Home-page: http://moveit.ros.org/
+Author: han
+Author-email: thefoxfoxfox@outlook.com
+Maintainer: han
+Maintainer-email: thefoxfoxfox@outlook.com
+License: BSD
+Description: UNKNOWN
+Platform: UNKNOWN

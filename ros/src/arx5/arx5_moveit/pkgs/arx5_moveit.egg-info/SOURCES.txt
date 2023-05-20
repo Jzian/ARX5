@@ -1,0 +1,7 @@
+setup.py
+pkgs/arx5_control/__init__.py
+pkgs/arx5_control/control.py
+pkgs/arx5_moveit.egg-info/PKG-INFO
+pkgs/arx5_moveit.egg-info/SOURCES.txt
+pkgs/arx5_moveit.egg-info/dependency_links.txt
+pkgs/arx5_moveit.egg-info/top_level.txt

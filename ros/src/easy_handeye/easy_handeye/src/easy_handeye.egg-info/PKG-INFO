@@ -1,0 +1,12 @@
+Metadata-Version: 1.2
+Name: easy-handeye
+Version: 0.4.3
+Summary: Simple, hardware-independent ROS library for hand-eye calibration
+Home-page: UNKNOWN
+Author: Marco Esposito
+Author-email: esposito@imfusion.com
+Maintainer: Marco Esposito
+Maintainer-email: esposito@imfusion.com
+License: LGPLv3
+Description: UNKNOWN
+Platform: UNKNOWN

@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="test"     default="false" />
+  <arg name="no_control" default="false" />
+  <arg name="use_sim"  default="$(arg no_control)" />
+  <arg name="use_rviz" default="false" />
+  <arg name="drag"     default="false" />
+
+  <group ns="arx5">
+    <node unless="$(arg use_sim)" name="arx5_control" pkg="arx5_control" type="arx5_control"/>  <!-- 不使用仿真时启用arx5_control来控制实机 -->
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"> <!-- moveit必备的关节状态中间件，联系我们发布的joint_states topic和moveit -->
+      <!-- <remap from="/joint_states" to="/arx5/joint_states" /> -->
+    </node>
+
+    <node unless="$(arg test)" pkg="arx5_moveit" type="follow_joint_trajectory_server.py" name="follow_joint_trajectory_server" output="screen">  <!-- moveit必备的关节控制接口，联系我们的底层驱动和moveit -->
+      <param name="drag" type="bool" value="$(arg drag)" />
+    </node>
+
+    <include file="$(find arx5_moveit)/launch/demo.launch">
+      <arg name="use_rviz" value="$(arg use_rviz)" />
+    </include>
+  </group>
+
+
+  <!-- 未安装末端夹爪时，发布一个虚拟的坐标变换，防止moveit一直报警告（然而似乎没啥作用） -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="gripper_link1_to_gripper_link2" args="0 -0.05 0 0 0 0 gripper_link1 gripper_link2" /> -->
+
+  <!-- 
+    moveit核心的启动借助了demo.launch文件，在其中我们进行了配置，并启动了movegroup.launch、moveit_rviz.launch这三个文件。
+    其中：
+      moveit_rviz.launch用于配置并启动rviz。
+      movegroup.launch则是重点的启动文件，在其中进行了moveit相关的核心配置并启动相关文件，主要包括：
+        planning_context.launch（与机器人模型有关）
+        planning_pipeline.launch.xml
+        trajectory_execution.launch.xml（与轨迹执行有关的配置文件，其中包括各种偏差允许值的配置等）
+        sensor_manager.launch.xml
+        move_group节点
+   -->
+
+</launch>

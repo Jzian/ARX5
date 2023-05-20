@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <group ns="camera">  <!-- 加上命名空间，即话题名的前缀 --> 
+        <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+            <arg name="enable_color" value="true"/>
+            <arg name="enable_pointcloud" value="true"/>
+            <arg name="tf_prefix" value="camera"/>  <!-- 将会自动转换成：camera_link -->
+            <arg name="color_width" value="1280"/>
+            <arg name="color_height" value="720"/>
+        </include>
+    </group>
+</launch>

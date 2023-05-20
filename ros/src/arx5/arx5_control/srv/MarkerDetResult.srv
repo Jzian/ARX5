@@ -1,0 +1,17 @@
+int8 id
+float32 size
+---
+float32 rotat_0
+float32 rotat_1
+float32 rotat_2
+float32 rotat_3
+float32 rotat_4
+float32 rotat_5
+float32 rotat_6
+float32 rotat_7
+float32 rotat_8
+float32 trans_x
+float32 trans_y
+float32 trans_z
+int32   idcount
+int8    idexist
