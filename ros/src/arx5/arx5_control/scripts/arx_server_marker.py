@@ -55,8 +55,8 @@ class arm_control:
                     'init_pose': {'pos': [0.3213 ,0.0023,0.1702], 'rot': [1.571,-1.571,1.571]}, # init pose
                     'put_pose': {'pos': [0.6527701,0.02,0.20748018], 'rot': [1.571,-1.571,1.571]}, # init pose
         }
-        self.grasp_height = 0.1363
-        self.put_height = 0.1
+        self.grasp_height = 0.11
+        self.put_height = 0.083
         self.obj_center_height = 0.05
 
         self.grasp_list = [0,1,2,3,4]
@@ -79,7 +79,7 @@ class arm_control:
 
         obj2cam_T = np.array([[r1, r2, r3, t1],
                    [r4, r5, r6, t2],
-                   [r7, r8, r9, t3+0.05],
+                   [r7, r8, r9, t3+0.03],
                    [0, 0, 0, 1]])
         print("yolo_pose", obj2cam_T)
         self.arm.get_current_state()
